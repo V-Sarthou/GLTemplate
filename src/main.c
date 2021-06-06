@@ -123,7 +123,11 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
+#ifdef GLAD_GLES
   if (!gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress))
+#else
+  if (!gladLoadGL())
+#endif
   {
     fprintf(stderr, "Failed to initialize OpenGL context\n");
     glfwTerminate();
@@ -138,11 +142,17 @@ int main(int argc, char **argv)
   glfwSetCursorPosCallback(window, cursor_position_callback);
   glfwSetScrollCallback(window, scroll_callback);
 
+#ifdef GLAD_GLES
+#define GLSL_VERSION "130"
+#else
+#define GLSL_VERSION "460"
+#endif
+
   static const shader_info shaders[] =
   {
     {
       GL_VERTEX_SHADER,
-      "#version 130\n"
+      "#version " GLSL_VERSION "\n"
       "out vec2 texCoords;\n"
       "void main()\n"
       "{\n"
@@ -152,7 +162,7 @@ int main(int argc, char **argv)
     },
     {
       GL_FRAGMENT_SHADER,
-      "#version 130\n"
+      "#version " GLSL_VERSION "\n"
       "in vec2 texCoords;\n"
       "out vec4 outputColor;\n"
       "void main()\n"

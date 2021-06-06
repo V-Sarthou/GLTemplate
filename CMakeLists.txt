@@ -35,7 +35,9 @@ FetchContent_GetProperties(glad)
 if(NOT glad_POPULATED)
   FetchContent_Populate(glad)
 endif()
-set(GLAD_API "gles2=2.0" CACHE STRING "" FORCE)
+set(GLAD_API "gles2=2.0" CACHE STRING "")
+set(GLAD_PROFILE "core" CACHE STRING "")
+set(GLAD_EXPORT OFF CACHE BOOL "" FORCE)
 add_subdirectory(${glad_SOURCE_DIR} ${glad_BINARY_DIR})
 
 # Add GLFW
@@ -51,5 +53,9 @@ endif()
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
+
+if(${GLAD_API} MATCHES "gles")
+  add_definitions(-DGLAD_GLES)
+endif()
 
 add_subdirectory(src)
