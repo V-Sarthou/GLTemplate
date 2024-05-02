@@ -22,16 +22,14 @@ set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
   glad
   GIT_REPOSITORY https://github.com/Dav1dde/glad.git
-  GIT_TAG        master
+  GIT_TAG        glad2
 )
 FetchContent_GetProperties(glad)
 if(NOT glad_POPULATED)
   FetchContent_Populate(glad)
 endif()
-set(GLAD_API "gles2=2.0" CACHE STRING "")
-set(GLAD_PROFILE "core" CACHE STRING "")
-set(GLAD_EXPORT OFF CACHE BOOL "" FORCE)
-add_subdirectory(${glad_SOURCE_DIR} ${glad_BINARY_DIR})
+add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
+glad_add_library(glad_gl_core_46 STATIC LANGUAGE C API gl:core=4.6)
 
 # Add GLFW
 FetchContent_Declare(
@@ -47,8 +45,6 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
 
-if(${GLAD_API} MATCHES "gles")
-  add_definitions(-DGLAD_GLES)
-endif()
-
-add_subdirectory(src)
+add_executable(${PROJECT_NAME} src/main.c)
+target_link_libraries(${PROJECT_NAME} PRIVATE glad_gl_core_46 glfw)
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME_DEBUG ${PROJECT_NAME}D)

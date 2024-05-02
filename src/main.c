@@ -1,4 +1,4 @@
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <stdlib.h>
@@ -109,12 +109,12 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 
 int main(int argc, char **argv)
 {
-  static const GLuint WINDOW_WIDTH = 1024;
-  static const GLuint WINDOW_HEIGHT = 768;
+  const GLuint WINDOW_WIDTH = 1024;
+  const GLuint WINDOW_HEIGHT = 768;
 
   glfwInit();
 
-  GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Template OpenGL Project", NULL, NULL);
+  GLFWwindow *const window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Template OpenGL Project", NULL, NULL);
   glfwMakeContextCurrent(window);
   if (window == NULL)
   {
@@ -123,18 +123,8 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   }
 
-#ifdef GLAD_GLES
-  if (!gladLoadGLES2Loader((GLADloadproc) glfwGetProcAddress))
-#else
-  if (!gladLoadGL())
-#endif
-  {
-    fprintf(stderr, "Failed to initialize OpenGL context\n");
-    glfwTerminate();
-    return EXIT_FAILURE;
-  }
-
-  printf("OpenGL %d.%d\n", GLVersion.major, GLVersion.minor);
+  const int gl_version = gladLoadGL(glfwGetProcAddress);
+  printf("OpenGL %d.%d\n", GLAD_VERSION_MAJOR(gl_version), GLAD_VERSION_MINOR(gl_version));
 
   glfwSetWindowSizeCallback(window, window_resize_callback);
   glfwSetKeyCallback(window, key_callback);
@@ -142,17 +132,11 @@ int main(int argc, char **argv)
   glfwSetCursorPosCallback(window, cursor_position_callback);
   glfwSetScrollCallback(window, scroll_callback);
 
-#ifdef GLAD_GLES
-#define GLSL_VERSION "130"
-#else
-#define GLSL_VERSION "460"
-#endif
-
   static const shader_info shaders[] =
   {
     {
       GL_VERTEX_SHADER,
-      "#version " GLSL_VERSION "\n"
+      "#version 460\n"
       "out vec2 texCoords;\n"
       "void main()\n"
       "{\n"
@@ -162,7 +146,7 @@ int main(int argc, char **argv)
     },
     {
       GL_FRAGMENT_SHADER,
-      "#version " GLSL_VERSION "\n"
+      "#version 460\n"
       "in vec2 texCoords;\n"
       "out vec4 outputColor;\n"
       "void main()\n"
