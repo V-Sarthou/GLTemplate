@@ -23,12 +23,9 @@ FetchContent_Declare(
   glad
   GIT_REPOSITORY https://github.com/Dav1dde/glad.git
   GIT_TAG        glad2
+  SOURCE_SUBDIR  cmake
 )
-FetchContent_GetProperties(glad)
-if(NOT glad_POPULATED)
-  FetchContent_Populate(glad)
-endif()
-add_subdirectory(${glad_SOURCE_DIR}/cmake ${glad_BINARY_DIR})
+FetchContent_MakeAvailable(glad)
 glad_add_library(glad_gl_core_46 STATIC LANGUAGE C API gl:core=4.6)
 
 # Add GLFW
@@ -37,13 +34,9 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/glfw/glfw.git
   GIT_TAG        master
 )
-FetchContent_GetProperties(glfw)
-if(NOT glfw_POPULATED)
-  FetchContent_Populate(glfw)
-endif()
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-add_subdirectory(${glfw_SOURCE_DIR} ${glfw_BINARY_DIR})
+FetchContent_MakeAvailable(glfw)
 
 add_executable(${PROJECT_NAME} src/main.c)
 target_link_libraries(${PROJECT_NAME} PRIVATE glad_gl_core_46 glfw)
